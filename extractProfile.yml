@@ -1,0 +1,32 @@
+startTime: 20
+endTime: 90
+outputFrames: 0
+outputFormat: yaml
+indent: 4
+
+lowlevel:
+    frameSize: 2048
+    hopSize: 1024
+    zeroPadding: 0
+    windowType: blackmanharris62
+    silentFrames: noise
+
+average_loudness:
+    frameSize: 88200
+    hopSize: 44100
+
+rhythm:
+    method: degara
+    minTempo: 40
+    maxTempo: 208
+
+tonal:
+    frameSize: 4096
+    hopSize: 2048
+    zeroPadding: 0
+    windowType: blackmanharris62
+    silentFrames: noise
+
+chromaprint:
+  compute: 1
+  duration: 0    
