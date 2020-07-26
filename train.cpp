@@ -9,6 +9,9 @@ Train features extractor
 #include <essentia/utils/extractor_music/extractor_version.h>
 #include <essentia/pool.h>
 #include <filesystem>
+#include <boost/asio/thread_pool.hpp>
+#include <boost/asio.hpp>
+
 namespace fs = std::filesystem;
 
 using namespace essentia;
@@ -49,7 +52,6 @@ void mergeValues(Pool& pool, Pool& options) {
 
 void outputToFile(Pool& pool, const string& outputFilename, Pool& options) {
 
-  cerr << "Writing results to file " << outputFilename << endl;
   int indent = (int)options.value<Real>("indent");
 
   string format = options.value<string>("outputFormat");
@@ -88,16 +90,21 @@ void computeFearures(std::string inputFile, std::string outputFile, std::string 
     if (options.value<Real>("outputFrames")) {
       outputToFile(resultsFrames, outputFile+"_frames", options);
     }
+
     delete extractor;
 }
 
 int main(int argc, char* argv[]) {
     essentia::init();
+    essentia::warningLevelActive = false; // deactivate warnings
+    essentia::infoLevelActive = false;    // deactivate info
+    essentia::errorLevelActive = false;    // activate error level
 
     std::string inputDir = argv[1];
     std::string outputDir = argv[2];
     std::string profile = argv[3];    
     
+    boost::asio::thread_pool pool(4);
     for (const auto & genreDir : fs::directory_iterator(inputDir)) {        
         std::string genre = genreDir.path().stem();
         fs::create_directory(outputDir + genre);
@@ -106,9 +113,14 @@ int main(int argc, char* argv[]) {
             const auto inputFile = audioFile.path();    
             std::string inputFileName = inputFile.stem();
 
-            computeFearures(inputFile, outputDir + genre + "/" + inputFileName + ".sig",  profile);
+            //computeFearures(inputFile, outputDir + genre + "/" + inputFileName + ".sig",  profile);
+            boost::asio::post(pool,
+              [outputDir, inputFile, genre, profile, inputFileName]()
+                 {
+                      computeFearures(inputFile, outputDir + genre + "/" + inputFileName + ".sig",  profile);
+                 });
         }                  
     }
-
+    pool.join();
     essentia::shutdown();
 }
