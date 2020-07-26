@@ -19,7 +19,7 @@ using namespace std;
 using namespace essentia::standard;
 
 void setExtractorDefaultOptions(Pool &options) {
-  options.set("outputFrames", true);
+  options.set("outputFrames", false);
   options.set("outputFormat", "yaml");
   options.set("indent", 4);
   

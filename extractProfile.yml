@@ -1,6 +1,6 @@
 startTime: 20
 endTime: 90
-outputFrames: 1
+outputFrames: 0
 outputFormat: yaml
 indent: 4
 
