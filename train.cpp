@@ -66,7 +66,7 @@ void outputToFile(Pool& pool, const string& outputFilename, Pool& options) {
   delete output;
 }
 
-void computeFearures(std::string inputFile, std::string outputFile, std::string profileFilename) {
+void computeFearures(const string& inputFile, const string& outputFile, const string& profileFilename) {
     Pool options;
 
     setExtractorDefaultOptions(options);
