@@ -65,7 +65,8 @@
 			"variant": "cpp",
 			"codecvt": "cpp",
 			"iomanip": "cpp",
-			"future": "cpp"
+			"future": "cpp",
+			"*.ipp": "cpp"
 		}
 	}
 }

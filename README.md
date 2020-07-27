@@ -23,7 +23,7 @@ $ bash ./prepareInput.sh /path/to/my/mp3s
 * Extract the features from the input audio files and train the model
 
 ``` 
-$ LD_LIBRARY_PATH=/usr/local/lib ./train ../data/input/ ../data/output/ ../extractProfile.yml 
+$ LD_LIBRARY_PATH=/usr/local/lib ./extract ../data/input/ ../data/output/ ../extractProfile.yml 
 ``` 
 
 ## TODOs

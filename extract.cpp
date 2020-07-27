@@ -1,5 +1,5 @@
 /*
-Train features extractor
+Extract features from songs
 */
 #include <iostream>
 #include <thread>
