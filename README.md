@@ -1,4 +1,4 @@
-# euterpe
+# asuka
 Music classification
 
 ## How it works
