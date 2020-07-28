@@ -30,6 +30,18 @@ $ bash ./train.sh
 
 * Run predictor CLI for some unknown song to test model:
 
+```
+08:14 $ LD_LIBRARY_PATH=/usr/local/lib ./predict /tmp/Baiao\ de\ Dois\ -\ Cabana\ Forro\ Stream.mp3 ../data/svm/music.history ../extractProfile.yml 
+[   INFO   ] MusicExtractor: Read metadata
+[   INFO   ] MusicExtractor: Compute md5 audio hash, codec, length, and EBU 128 loudness
+[   INFO   ] MusicExtractor: Replay gain
+[   INFO   ] MusicExtractor: Compute audio features
+[   INFO   ] MusicExtractor: Compute aggregation
+[   INFO   ] All done
+[   INFO   ] MusicExtractorSVM: adding SVM model ../data/svm/music.history
+It's probably Baiao With probability 0.65258
+``` 
+
 ## TODOs
 
 * Write REST service, so that it would be possible to run predictor as a web app.

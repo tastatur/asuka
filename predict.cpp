@@ -31,8 +31,9 @@ void predict(const string& audioFileName, const string& svmFileName, const strin
     predictor->output("pool").set(predictions);
     predictor->compute();
 
-    outputToFile(predictions, audioFileName + ".yml", options);
-
+    //outputToFile(predictions, audioFileName + ".yml", options);
+    cout << "It's probably " << predictions.value<string>("highlevel.music.value") << " With probability " << predictions.value<Real>("highlevel.music.probability") << endl;
+ 
     delete predictor;
 }
 
