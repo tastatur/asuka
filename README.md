@@ -31,7 +31,7 @@ $ bash ./train.sh
 * Run predictor CLI for some unknown song to test model:
 
 ```
-08:14 $ LD_LIBRARY_PATH=/usr/local/lib ./predict /tmp/Baiao\ de\ Dois\ -\ Cabana\ Forro\ Stream.mp3 ../data/svm/music.history ../extractProfile.yml 
+$ LD_LIBRARY_PATH=/usr/local/lib ./predict /tmp/Mirkka\ \ Madrugada.mp3 ../data/svm/music.history ../extractProfile.yml 
 [   INFO   ] MusicExtractor: Read metadata
 [   INFO   ] MusicExtractor: Compute md5 audio hash, codec, length, and EBU 128 loudness
 [   INFO   ] MusicExtractor: Replay gain
@@ -39,7 +39,13 @@ $ bash ./train.sh
 [   INFO   ] MusicExtractor: Compute aggregation
 [   INFO   ] All done
 [   INFO   ] MusicExtractorSVM: adding SVM model ../data/svm/music.history
-It's probably Baiao With probability 0.65258
+It's probably Baiao With probability 0.470659
+Other probabilities
+Baiao: 0.470659
+Forro: 0.424234
+Samba: 0.00742601
+Xaxado: 0.0596543
+Xote: 0.0380265
 ``` 
 
 ## TODOs

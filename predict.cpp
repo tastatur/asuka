@@ -2,6 +2,7 @@
 CLI for predicting song genre based on the previously trained SVM model
 */
 #include "utils.h"
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 using namespace essentia;
@@ -31,9 +32,17 @@ void predict(const string& audioFileName, const string& svmFileName, const strin
     predictor->output("pool").set(predictions);
     predictor->compute();
 
-    //outputToFile(predictions, audioFileName + ".yml", options);
     cout << "It's probably " << predictions.value<string>("highlevel.music.value") << " With probability " << predictions.value<Real>("highlevel.music.probability") << endl;
  
+    vector<string> genres = predictions.descriptorNames("highlevel.music.all");
+    cout << "Other probabilities" << endl;
+    for (auto const& genre : genres) {
+        std::vector<std::string> splittedKey;
+        boost::split(splittedKey, genre, [](char c){return c == '.';});
+
+        cout << splittedKey[3] << ": " << predictions.value<Real>(genre) << endl; 
+    }
+
     delete predictor;
 }
 
