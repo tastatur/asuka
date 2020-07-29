@@ -5,5 +5,5 @@
     },  
     "http" : {  
         "script_names" : [ "/predict" ]  
-    }  
+    } 
 } 

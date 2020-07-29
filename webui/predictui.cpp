@@ -5,6 +5,7 @@
 #include <cppcms/url_mapper.h>  
 #include <cppcms/applications_pool.h>  
 #include <iostream>  
+#include <cppcms/http_file.h>
 #include "content.h"
 
 class PredictUi : public cppcms::application { 
@@ -19,6 +20,11 @@ class PredictUi : public cppcms::application {
 
     void predict() {
         content::predict_page c;
+        if(request().request_method()=="POST") {  
+            c.predict.load(context());
+            c.predict.audioFile.load(context());
+            c.predict.audioFile.value().get()->save_to("/tmp/test.mp3");
+        }
         render("predict_page",c);
     }
 };
