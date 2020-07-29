@@ -1,0 +1,19 @@
+<% c++ #include "content.h" %>
+<% skin view %>
+<% view predict_page uses content::predict_page %>
+<% template render() %>
+<html>
+    <body>
+    <% if not empty possibleGenre %>
+            <h1>Possible genre is  <%= possibleGenre %></h1>
+    <% else %>
+        <h1>Upload your song</h1>
+    <% end %>
+    <form method="post" action="" >
+    <% form as_p predict %>
+    </form>
+  </body>
+<html>
+<% end template %>
+<% end view %>
+<% end skin %>
