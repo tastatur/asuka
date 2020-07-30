@@ -20,10 +20,16 @@ class PredictUi : public cppcms::application {
 
     void predict() {
         content::predict_page c;
-        if(request().request_method()=="POST") {  
+        if(request().request_method() == "POST") {  
             c.predict.load(context());
-            c.predict.audioFile.load(context());
-            c.predict.audioFile.value().get()->save_to("/tmp/test.mp3");
+            if (c.predict.validate()) {     
+                cppcms::http::file* audioFile = c.predict.audioFile.value().get();
+                
+                audioFile->save_to("/tmp/test.mp3");
+
+                audioFile->close();
+                c.predict.clear();
+            }
         }
         render("predict_page",c);
     }

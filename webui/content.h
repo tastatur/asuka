@@ -12,6 +12,13 @@ namespace content  {
 
         predict_form() {
             submit.value("Send");
+
+            audioFile.non_empty();
+            audioFile.add_valid_magic("\x49\x44\x33");
+            audioFile.add_valid_magic("\xff\xfb");
+            audioFile.add_valid_magic("\xff\xf3");
+            audioFile.add_valid_magic("\xff\xf2");
+
             add(audioFile);
             add(submit);
         }
