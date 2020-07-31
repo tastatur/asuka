@@ -5,5 +5,8 @@
     },  
     "http" : {  
         "script_names" : [ "/predict" ]  
-    } 
+    } ,
+    "profile": "extractProfile.yml",
+    "svmPath": "data/svm/music.history",
+    "tempPath": "/tmp/"
 } 
