@@ -26,6 +26,13 @@ namespace content  {
 
     struct predict_page : public cppcms::base_content { 
         std::string possibleGenre;
+        float probability;
+        float probabilityBaiao;
+        float probabilityForro;
+        float probabilitySamba;
+        float probabilityXaxado;
+        float probabilityXote;
+
         predict_form predict;
     };
 }

@@ -5,7 +5,13 @@
 <html>
     <body>
     <% if not empty possibleGenre %>
-            <h1>Possible genre is  <%= possibleGenre %></h1>
+            <p>Possible genre is <%= possibleGenre %> with probability <%= probability %></p>
+            <p>Other genres</p>
+            <p>Baiao: <%= probabilityBaiao %></p>
+            <p>Forro: <%= probabilityForro %></p>
+            <p>Samba: <%= probabilitySamba %></p>
+            <p>Xaxado: <%= probabilityXaxado %></p>
+            <p>Xote: <%= probabilityXote %></p>
     <% else %>
         <h1>Upload your song</h1>
     <% end %>

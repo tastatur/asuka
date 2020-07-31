@@ -84,6 +84,12 @@ class PredictUi : public cppcms::application {
                 predictor->compute();
 
                 c.possibleGenre = predictions.value<string>("highlevel.music.value");
+                c.probability = predictions.value<Real>("highlevel.music.probability");
+                c.probabilityBaiao = predictions.value<Real>("highlevel.music.all.Baiao");
+                c.probabilityForro = predictions.value<Real>("highlevel.music.all.Forro");
+                c.probabilitySamba = predictions.value<Real>("highlevel.music.all.Samba");
+                c.probabilityXaxado = predictions.value<Real>("highlevel.music.all.Xaxado");
+                c.probabilityXote = predictions.value<Real>("highlevel.music.all.Xote");
 
                 delete predictor; 
 
