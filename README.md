@@ -48,6 +48,13 @@ Xaxado: 0.0596543
 Xote: 0.0380265
 ``` 
 
+* Build docker container and run web ui
+
+```
+$ docker build -t asuka .
+$ docker run -v /tmp/asuka:/data -d -p 8080:8080 asuka
+```
+
 ## TODOs
 
-* Write REST service, so that it would be possible to run predictor as a web app.
+* Proper AJAX webapp
