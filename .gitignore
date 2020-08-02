@@ -2,3 +2,5 @@
 build/
 data/
 webui/view_*.cpp
+cmake-build-debug/
+.idea/
