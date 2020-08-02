@@ -4,7 +4,7 @@ project(asuka VERSION 0.1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-find_package(Boost REQUIRED system)
+find_package(Boost REQUIRED system filesystem)
 include_directories(${Boost_INCLUDE_DIR})
 
 include_directories(/usr/local/include/essentia/)
@@ -20,7 +20,7 @@ include_directories(/usr/include/eigen3)
 add_executable(extract extract.cpp utils.cpp)
 add_executable(predict predict.cpp utils.cpp)
 
-add_executable(webui webui/predictui.cpp utils.cpp webui/view_predict.cpp) 
+add_executable(webui webui/predictui.cpp utils.cpp webui/view_predict.cpp webui/predictJson.cpp)
 
 link_directories(/usr/local/lib)
 
@@ -63,3 +63,5 @@ target_link_libraries(webui QtCore)
 target_link_libraries(webui gaia2)
 target_link_libraries(webui cppcms)
 target_link_libraries(webui booster)
+target_link_libraries(webui pthread)
+target_link_libraries(webui ${Boost_LIBRARIES})

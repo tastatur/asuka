@@ -1,27 +1,23 @@
-#include <cppcms/application.h>  
-#include <cppcms/service.h>  
-#include <cppcms/http_response.h>  
-#include <cppcms/url_dispatcher.h>  
-#include <cppcms/url_mapper.h>  
-#include <cppcms/applications_pool.h>  
-#include <iostream>  
+#include <cppcms/application.h>
+#include <cppcms/service.h>
+#include <cppcms/url_dispatcher.h>
+#include <cppcms/applications_pool.h>
+#include <iostream>
 #include <cppcms/http_file.h>
 #include <filesystem>
 #include <random>
+#include <boost/process.hpp>
 #include <string>
 #include "content.h"
-#include "../utils.h"
+#include "predictJson.h"
 
 using namespace std;
-using namespace essentia;
-using namespace essentia::standard;
 
-class PredictUi : public cppcms::application { 
-    private:
-      Pool options;
-      string profileFileName;
-      string svmPath;
-      string tempPath;
+class PredictUi : public cppcms::application {
+private:
+    string profileFileName;
+    string svmPath;
+    string tempPath;
 
     string random_string(int size) {
         string chars("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
@@ -30,14 +26,28 @@ class PredictUi : public cppcms::application {
         mt19937 generator(rd());
 
         std::shuffle(chars.begin(), chars.end(), generator);
-        return chars.substr(0, size); 
-    }
-   
-    public:
+        return chars.substr(0, size);
+    };
 
-    PredictUi(cppcms::service& srv) : cppcms::application(srv) {
+    vector<std::string> executePredict(std::string& audioFile) {
+        boost::process::ipstream is;
+        boost::process::child c(boost::process::search_path("webui"), "predict", audioFile, svmPath, profileFileName, boost::process::std_out > is);
+
+        std::vector<std::string> data;
+        std::string line;
+
+        while (c.running() && std::getline(is, line) && !line.empty())
+            data.push_back(line);
+
+        c.wait();
+
+        return data;
+    }
+
+public:
+    PredictUi(cppcms::service &srv) : cppcms::application(srv) {
         dispatcher().assign("", &PredictUi::predict, this);
-        mapper().assign(""); 
+        mapper().assign("");
 
         mapper().root("/predict");
         cppcms::json::value settings = srv.settings();
@@ -45,79 +55,59 @@ class PredictUi : public cppcms::application {
         profileFileName = settings["profile"].str();
         svmPath = settings["svmPath"].str();
         tempPath = settings["tempPath"].str();
-
-        setExtractorDefaultOptions(options);
-        setExtractorOptions(profileFileName, options);  
     }
 
     void predict() {
         content::predict_page c;
-        if(request().request_method() == "POST") {  
+        if (request().request_method() == "POST") {
             c.predict.load(context());
-            if (c.predict.validate()) {     
-                cppcms::http::file* audioFile = c.predict.audioFile.value().get();
-                
-                //std::string filename = string(random_string(31) + ".mp3");
+            if (c.predict.validate()) {
+                cppcms::http::file *audioFile = c.predict.audioFile.value().get();
+
                 std::string filename = string(tempPath + random_string(31) + ".mp3");
                 audioFile->save_to(filename);
+                audioFile->close();
 
-                Pool features;
-                Pool frames;
+                std::vector<std::string> predictionsData = executePredict(filename);
+                istringstream predictionsStream(predictionsData[0]);
+                cppcms::json::value predictions;
+                predictions.load(predictionsStream, true);
 
-                Algorithm* extractor = AlgorithmFactory::create("MusicExtractor",
-                                                    "profile", profileFileName);
+                c.possibleGenre = predictions["value"].str();
+                c.probability = predictions["probability"].get_value<Real>();
+                c.probabilityBaiao = predictions["probabilityBaiao"].get_value<Real>();
+                c.probabilityForro = predictions["probabilityForro"].get_value<Real>();
+                c.probabilitySamba = predictions["probabilitySamba"].get_value<Real>();
+                c.probabilityXaxado = predictions["probabilityXaxado"].get_value<Real>();
+                c.probabilityXote = predictions["probabilityXote"].get_value<Real>();
 
-                extractor->input("filename").set(filename);
-                extractor->output("results").set(features);
-                extractor->output("resultsFrames").set(frames);   
-                extractor->compute();      
-
-                mergeValues(features, options);    
-
-                delete extractor;  
-
-                vector<string> svmModels = {svmPath};
-                Algorithm* predictor = AlgorithmFactory::create("MusicExtractorSVM", "svms", svmModels);
-                Pool predictions;
-                predictor->input("pool").set(features);
-                predictor->output("pool").set(predictions);
-                predictor->compute();
-
-                c.possibleGenre = predictions.value<string>("highlevel.music.value");
-                c.probability = predictions.value<Real>("highlevel.music.probability");
-                c.probabilityBaiao = predictions.value<Real>("highlevel.music.all.Baiao");
-                c.probabilityForro = predictions.value<Real>("highlevel.music.all.Forro");
-                c.probabilitySamba = predictions.value<Real>("highlevel.music.all.Samba");
-                c.probabilityXaxado = predictions.value<Real>("highlevel.music.all.Xaxado");
-                c.probabilityXote = predictions.value<Real>("highlevel.music.all.Xote");
-
-                delete predictor; 
-
-                audioFile->close();                
                 c.predict.clear();
-
                 filesystem::remove(filename);
             }
         }
-        render("predict_page",c);
+        render("predict_page", c);
     }
 };
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
+
+    if (strcmp("predict", argv[1]) == 0) {
+        string audioFile = string(argv[2]);
+        string svmFile = string(argv[3]);
+        string optionsFile = string(argv[4]);
+
+        predictJsonj(audioFile, svmFile, optionsFile);
+
+        return 0;
+    }
+
     try {
         cppcms::service srv(argc, argv);
-
-        essentia::init();
-        essentia::warningLevelActive = false; // deactivate warnings
-        essentia::infoLevelActive = false;    // deactivate info
-        essentia::errorLevelActive = false;    // activate error level
-        //essentia::setDebugLevel(EAll);
-
         srv.applications_pool().mount(cppcms::applications_factory<PredictUi>());
         srv.run();
-    } catch(std::exception const &e) {  
-        std::cerr << e.what() << std::endl;  
-    } 
+    } catch (std::exception const &e) {
+        std::cerr << e.what() << std::endl;
+    }
 
-    essentia::shutdown();
+    return 0;
 }
